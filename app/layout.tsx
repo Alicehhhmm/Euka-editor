@@ -4,6 +4,7 @@ import { Open_Sans } from 'next/font/google'
 
 import { cn } from '@/lib/utils'
 import { ThemeProvider } from '@/components/provider/theme-provider'
+import { ConvexClientProvider } from '@/components/provider/convex-client-provider'
 
 const font = Open_Sans({
     variable: '--font-open-sans',
@@ -23,9 +24,11 @@ export default function RootLayout({
     return (
         <html lang='en' suppressHydrationWarning>
             <body className={cn(font.className, `antialiased`, `bg-white dark:bg-[#313333]`)}>
-                <ThemeProvider attribute='class' defaultTheme='dark' enableSystem storageKey='discord-theme' disableTransitionOnChange>
-                    {children}
-                </ThemeProvider>
+                <ConvexClientProvider>
+                    <ThemeProvider attribute='class' defaultTheme='dark' enableSystem storageKey='discord-theme' disableTransitionOnChange>
+                        {children}
+                    </ThemeProvider>
+                </ConvexClientProvider>
             </body>
         </html>
     )
