@@ -19,7 +19,7 @@ export const InviteMembersModal = () => {
     return (
         <Dialog open={isModalOpen} onOpenChange={handleClose}>
             <DialogContent className='p-0 bg-transparent border-none min-h-[30rem] max-w-[880px]'>
-                <OrganizationProfile />
+                <OrganizationProfile routing='hash' />
             </DialogContent>
         </Dialog>
     )
