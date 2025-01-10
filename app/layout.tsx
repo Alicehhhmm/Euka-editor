@@ -5,6 +5,7 @@ import { Open_Sans } from 'next/font/google'
 import { cn } from '@/lib/utils'
 import { ThemeProvider } from '@/components/provider/theme-provider'
 import { ConvexClientProvider } from '@/components/provider/convex-client-provider'
+import { ModalProvider } from '@/components/provider/modal-provider'
 
 const font = Open_Sans({
     variable: '--font-open-sans',
@@ -32,6 +33,7 @@ export default function RootLayout({
                         storageKey='euka-theme'
                         disableTransitionOnChange
                     >
+                        <ModalProvider />
                         {children}
                     </ThemeProvider>
                 </ConvexClientProvider>
