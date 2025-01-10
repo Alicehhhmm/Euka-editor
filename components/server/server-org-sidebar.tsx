@@ -42,7 +42,7 @@ export const ServerOrgSidebar = () => {
                             width: '100%',
                             borderRadius: '8px',
                             border: '1px solid #e5e7eb',
-                            justifyContent: 'center',
+                            justifyContent: 'space-between',
                             backgroundColor: 'white',
                         },
                     },

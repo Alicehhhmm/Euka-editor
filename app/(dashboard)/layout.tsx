@@ -11,7 +11,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         <main className='h-full'>
             <NavigationSidebar />
             <div className='h-full pl-[60px] bg-slate-300/40'>
-                <div className='h-full flex gap-x-3'>
+                <div className='h-full flex'>
                     <ServerOrgSidebar />
                     <div className='h-full flex-1'>
                         <NavigationBar />
