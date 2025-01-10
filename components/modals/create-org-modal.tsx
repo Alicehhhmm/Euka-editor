@@ -18,7 +18,7 @@ export const CreateOrgModal = () => {
 
     return (
         <Dialog open={isModalOpen} onOpenChange={handleClose}>
-            <DialogContent className='p-0 bg-transparent border-none max-w-[480px]'>
+            <DialogContent className='p-0 bg-transparent border-none max-w-[430px]'>
                 <CreateOrganization />
             </DialogContent>
         </Dialog>
