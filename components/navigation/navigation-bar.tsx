@@ -2,6 +2,7 @@
 
 import { UserButton, OrganizationSwitcher } from '@clerk/nextjs'
 import { SearchInput } from '@/components/search-input'
+import { NavigationBarInvite } from '@/components/navigation/navigation-bar-invite'
 
 export const NavigationBar = () => {
     return (
@@ -33,6 +34,7 @@ export const NavigationBar = () => {
                     }}
                 />
             </div>
+            <NavigationBarInvite />
             <UserButton />
         </div>
     )
