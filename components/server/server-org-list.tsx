@@ -44,8 +44,17 @@ export const ServerOrgList = ({ orgId, query }: ServerOrgListProps) => {
     }
 
     if (data === undefined) {
-        // TODO: Update loading animations render
-        return <div className='w-full h-full'>Logading....</div>
+        return (
+            <div className='w-full h-full'>
+                <h2 className='text-3xl'>{favorites ? `favorites boards` : `Team Boards`}</h2>
+                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-5 mt-8 pb-10'>
+                    <NewBoardButton orgId={orgId} disabled={true} />
+                    <BoardCard.Skeleton />
+                    <BoardCard.Skeleton />
+                    <BoardCard.Skeleton />
+                </div>
+            </div>
+        )
     }
 
     // TODO: update different status icons or images

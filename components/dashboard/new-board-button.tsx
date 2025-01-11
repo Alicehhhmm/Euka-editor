@@ -36,13 +36,13 @@ export const NewBoardButton = ({ orgId, disabled }: NewBoardButtonProps) => {
             disabled={pending || disabled}
             onClick={handleCreated}
             className={cn(
-                'col-span-1 aspect-[100/127] bg-blue-600 rounded-lg hover:bg-blue-800 flex flex-col items-center justify-center py-6',
-                (pending || disabled) && 'opacity-75'
+                'col-span-1 aspect-[100/127] bg-slate-400 rounded-lg hover:bg-slate-600 flex flex-col items-center justify-center py-6',
+                (pending || disabled) && 'opacity-75 hover:bg-slate-600 cursor-not-allowed'
             )}
         >
             <div className=''></div>
             <Plus size={32} className='w-12 h-12 text-white stroke-1' />
-            <p className='text-sm text-white font-light'>New board</p>
+            <p className='text-sm text-white font-semibold'>New board</p>
         </button>
     )
 }
