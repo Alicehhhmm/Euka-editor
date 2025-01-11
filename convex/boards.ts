@@ -1,28 +1,10 @@
 import { v } from "convex/values";
-import { defineSchema, defineTable } from "convex/server";
 
-import { mutation } from "./_generated/server";
+import { query } from "./_generated/server";
 
-const images = [
-    '/placeholders/logoipsum-1.svg',
-    '/placeholders/logoipsum-2.svg',
-    '/placeholders/logoipsum-3.svg',
-    '/placeholders/logoipsum-4.svg',
-    '/placeholders/logoipsum-5.svg',
-    '/placeholders/logoipsum-6.svg',
-    '/placeholders/logoipsum-7.svg',
-    '/placeholders/logoipsum-8.svg',
-    '/placeholders/logoipsum-9.svg',
-    '/placeholders/logoipsum-10.svg',
-    '/placeholders/logoipsum-11.svg',
-    '/placeholders/logoipsum-12.svg',
-]
-
-// create boards
-export const create = mutation({
+export const get = query({
     args: {
         orgId: v.string(),
-        title: v.string(),
     },
     handler: async (ctx, args) => {
         const identity = await ctx.auth.getUserIdentity()
@@ -31,16 +13,12 @@ export const create = mutation({
             throw new Error('Unauthorized')
         }
 
-        const randomImage = images[Math.floor(Math.random() * images.length)]
+        const boardsList = await ctx.db
+            .query('boards')
+            .withIndex('by_org', (q) => q.eq('orgId', args.orgId))
+            .order('desc')
+            .collect()
 
-        const board = await ctx.db.insert('boards', {
-            orgId: args.orgId,
-            title: args.title,
-            authorId: identity.subject,
-            authorName: identity.name!,
-            imageUrl: randomImage
-        })
-
-        return board
+        return boardsList
     },
 })

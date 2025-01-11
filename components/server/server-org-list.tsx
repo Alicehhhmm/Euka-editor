@@ -1,5 +1,6 @@
 'use client'
 
+import { useQuery } from 'convex/react'
 import { useOrganization } from '@clerk/nextjs'
 import { toast } from 'sonner'
 
@@ -20,9 +21,9 @@ export const ServerOrgList = ({ orgId, query }: ServerOrgListProps) => {
     const { organization } = useOrganization()
 
     // use convex db
-    const { mutate, pending } = useApiMutation(api.boards.create)
+    const { mutate, pending } = useApiMutation(api.board.create)
 
-    const data = []
+    const data = useQuery(api.boards.get, { orgId })
 
     const handleCreated = () => {
         if (!organization) return
@@ -38,6 +39,11 @@ export const ServerOrgList = ({ orgId, query }: ServerOrgListProps) => {
             .catch(e => {
                 toast.error('Failed to create board: ' + e.message)
             })
+    }
+
+    if (data === undefined) {
+        // TODO: Update loading animations render
+        return <div className='w-full h-full'>Logading....</div>
     }
 
     // TODO: update different status icons or images
@@ -86,6 +92,7 @@ export const ServerOrgList = ({ orgId, query }: ServerOrgListProps) => {
     return (
         <div>
             <h1>serverOrgList</h1>
+            {JSON.stringify(data)}
         </div>
     )
 }
