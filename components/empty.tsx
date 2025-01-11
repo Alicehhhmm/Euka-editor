@@ -10,6 +10,7 @@ type EmptyProps = {
     imgUrl?: string
     type?: 'defaultEmpty' | 'orgEmpty' | 'teamEmpty'
     btnTitle?: string
+    disabled?: boolean
     handle?: () => void
 }
 
@@ -21,6 +22,7 @@ export const Empty = ({
     type = 'defaultEmpty',
     handle,
     btnTitle = 'Create Button',
+    disabled = false,
 }: EmptyProps) => {
     return (
         <div className='h-full w-full flex flex-col justify-center items-center'>
@@ -38,7 +40,7 @@ export const Empty = ({
                     </Button>
                 )}
                 {type === 'teamEmpty' && (
-                    <Button onClick={handle} size='lg'>
+                    <Button disabled={disabled} onClick={handle} size='lg'>
                         {btnTitle}
                     </Button>
                 )}

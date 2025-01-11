@@ -1,8 +1,8 @@
 'use client'
 
-import { useMutation } from 'convex/react'
 import { useOrganization } from '@clerk/nextjs'
 
+import { useApiMutation } from '@/hooks/use-api-mutation'
 import { api } from '@/convex/_generated/api'
 import { Empty } from '@/components/empty'
 
@@ -17,14 +17,16 @@ interface ServerOrgListProps {
 export const ServerOrgList = ({ orgId, query }: ServerOrgListProps) => {
     const { search, favorites } = query
     const { organization } = useOrganization()
-    const createBoards = useMutation(api.boards.create)
+
+    // use convex db
+    const { mutate, pending } = useApiMutation(api.boards.create)
 
     const data = []
 
     const handleCreated = () => {
         if (!organization) return
 
-        createBoards({
+        mutate({
             orgId: organization.id,
             title: 'Untitled',
         })
@@ -66,6 +68,7 @@ export const ServerOrgList = ({ orgId, query }: ServerOrgListProps) => {
                     imgUrl='/file.svg'
                     description={`No organizations found at all`}
                     btnTitle='Create Boards'
+                    disabled={pending}
                     handle={handleCreated}
                 />
             </div>
