@@ -20,7 +20,7 @@ const DashboardPage = ({ searchParams }: DashboardPageProps) => {
     const { onOpen } = useModal()
 
     return (
-        <main className='bg-slate-100 flex-1 h-[calc(100%-80px)] p-6'>
+        <main className='bg-slate-100 flex-1 min-h-[calc(100%-80px)] p-6'>
             {!organization ? (
                 <Empty
                     type='orgEmpty'
