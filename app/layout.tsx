@@ -3,9 +3,10 @@ import type { Metadata } from 'next'
 import { Open_Sans } from 'next/font/google'
 
 import { cn } from '@/lib/utils'
+import { Toaster } from '@/components/ui/sonner'
 import { ThemeProvider } from '@/components/provider/theme-provider'
-import { ConvexClientProvider } from '@/components/provider/convex-client-provider'
 import { ModalProvider } from '@/components/provider/modal-provider'
+import { ConvexClientProvider } from '@/components/provider/convex-client-provider'
 
 const font = Open_Sans({
     variable: '--font-open-sans',
@@ -34,6 +35,7 @@ export default function RootLayout({
                         disableTransitionOnChange
                     >
                         <ModalProvider />
+                        <Toaster />
                         {children}
                     </ThemeProvider>
                 </ConvexClientProvider>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useOrganization } from '@clerk/nextjs'
+import { toast } from 'sonner'
 
 import { useApiMutation } from '@/hooks/use-api-mutation'
 import { api } from '@/convex/_generated/api'
@@ -30,6 +31,13 @@ export const ServerOrgList = ({ orgId, query }: ServerOrgListProps) => {
             orgId: organization.id,
             title: 'Untitled',
         })
+            .then(() => {
+                toast.success('Board created successfully!')
+                // TODO: Redirect to board/{id}
+            })
+            .catch(e => {
+                toast.error('Failed to create board: ' + e.message)
+            })
     }
 
     // TODO: update different status icons or images
