@@ -4,10 +4,11 @@ import { useQuery } from 'convex/react'
 import { useOrganization } from '@clerk/nextjs'
 import { toast } from 'sonner'
 
-import { useApiMutation } from '@/hooks/use-api-mutation'
 import { api } from '@/convex/_generated/api'
+import { useApiMutation } from '@/hooks/use-api-mutation'
 import { Empty } from '@/components/empty'
 import { BoardCard } from '@/components/dashboard/board-card'
+import { NewBoardButton } from '@/components/dashboard/new-board-button'
 
 interface ServerOrgListProps {
     orgId: string
@@ -94,6 +95,7 @@ export const ServerOrgList = ({ orgId, query }: ServerOrgListProps) => {
         <div>
             <h2 className='text-3xl'>{favorites ? `favorites boards` : `Team Boards`}</h2>
             <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-5 mt-8 pb-10'>
+                <NewBoardButton orgId={orgId} disabled={false} />
                 {data?.map(board => (
                     <BoardCard
                         key={board._id}
