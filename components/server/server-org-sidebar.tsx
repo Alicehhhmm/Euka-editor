@@ -23,7 +23,7 @@ export const ServerOrgSidebar = () => {
         <div className='bg-white w-[206px] p-5 hidden lg:flex flex-col space-y-4'>
             <Link href='/'>
                 <div className='flex items-center gap-x-2'>
-                    <Image src='/next.svg' alt='Logo' width={60} height={60} />
+                    <Image src='/placeholders/logoipsum-3.svg' alt='Logo' width={60} height={60} />
                     <span className={cn('font-semibold text-2xl', font.className)}>Euka</span>
                 </div>
             </Link>
