@@ -56,7 +56,19 @@ export const remove = mutation({
             throw new Error('Unauthorized')
         }
 
-        // TODO: Later check to delete favorite relation as well
+        const userId = identity.subject
+
+        // 删除时同时删除收藏夹对应的内容
+        const existingFavorites = await ctx.db.query('userFavorites')
+            .withIndex('by_user_board', (q) => (
+                q.eq('userId', userId)
+                    .eq('boardId', args.id)
+            ))
+            .unique();
+
+        if (existingFavorites) {
+            await ctx.db.delete(existingFavorites._id)
+        }
 
         await ctx.db.delete(args.id)
     }
