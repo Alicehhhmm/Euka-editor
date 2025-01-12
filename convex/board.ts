@@ -17,7 +17,7 @@ const images = [
     '/placeholders/logoipsum-12.svg',
 ]
 
-// create boards
+// create board
 export const create = mutation({
     args: {
         orgId: v.string(),
@@ -43,3 +43,21 @@ export const create = mutation({
         return board
     },
 })
+
+// Delete board
+export const remove = mutation({
+    args: {
+        id: v.id('boards'),
+    },
+    handler: async (ctx, args) => {
+        const identity = await ctx.auth.getUserIdentity()
+
+        if (!identity) {
+            throw new Error('Unauthorized')
+        }
+
+        // TODO: Later check to delete favorite relation as well
+
+        await ctx.db.delete(args.id)
+    }
+});
