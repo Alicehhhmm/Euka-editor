@@ -1,6 +1,6 @@
 'use client'
 
-import { Link2, Trash2 } from 'lucide-react'
+import { Link2, Pencil, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { DropdownMenuContentProps } from '@radix-ui/react-dropdown-menu'
 import {
@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 import { api } from '@/convex/_generated/api'
+import { useModal } from '@/hooks/use-modal-store'
 import { useApiMutation } from '@/hooks/use-api-mutation'
 
 import { ConfirmModal } from '@/components/modals/confirm-modal'
@@ -27,6 +28,7 @@ interface BoardActionsProps {
 }
 
 export const BoardActions = ({ id, title, side, sideOffset, children }: BoardActionsProps) => {
+    const { onOpen } = useModal()
     const { mutate, pending } = useApiMutation(api.board.remove)
 
     const onCopyLink = () => {
@@ -34,6 +36,13 @@ export const BoardActions = ({ id, title, side, sideOffset, children }: BoardAct
             .writeText(`${window.location.origin}/board/${id}`)
             .then(() => toast.success('Link copied to clipboard!'))
             .catch(() => toast.error('Failed to copy link to clipboard!'))
+    }
+
+    const onRename = () => {
+        onOpen('renameBoard', {
+            id,
+            title,
+        })
     }
 
     const onDelete = () => {
@@ -49,6 +58,10 @@ export const BoardActions = ({ id, title, side, sideOffset, children }: BoardAct
                 <DropdownMenuItem className='p-3 cursor-pointer' onClick={onCopyLink}>
                     <Link2 className='w-4 h-4 mr-2' />
                     Copy board link
+                </DropdownMenuItem>
+                <DropdownMenuItem className='p-3 cursor-pointer' onClick={onRename}>
+                    <Pencil className='w-4 h-4 mr-2' />
+                    Rename
                 </DropdownMenuItem>
                 <ConfirmModal
                     header='Delete board?'

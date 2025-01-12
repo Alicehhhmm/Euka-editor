@@ -8,8 +8,6 @@ import { useModal } from '@/hooks/use-modal-store'
 export const CreateOrgModal = () => {
     const { isOpen, onClose, type } = useModal()
 
-    console.log('CreateOrgModals', type, isOpen)
-
     const isModalOpen = isOpen && type === 'createOrganization'
 
     const handleClose = () => {

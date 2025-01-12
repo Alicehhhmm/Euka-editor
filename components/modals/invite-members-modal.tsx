@@ -8,8 +8,6 @@ import { useModal } from '@/hooks/use-modal-store'
 export const InviteMembersModal = () => {
     const { isOpen, onClose, type } = useModal()
 
-    console.log('InviteMembersModal', type, isOpen)
-
     const isModalOpen = isOpen && type === 'invite'
 
     const handleClose = () => {
