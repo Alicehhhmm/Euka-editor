@@ -25,7 +25,10 @@ export const ServerOrgList = ({ orgId, query }: ServerOrgListProps) => {
     // use convex db
     const { mutate, pending } = useApiMutation(api.board.create)
 
-    const data = useQuery(api.boards.get, { orgId })
+    const data = useQuery(api.boards.get, {
+        orgId,
+        ...query,
+    })
 
     const handleCreated = () => {
         if (!organization) return
