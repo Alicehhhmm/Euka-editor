@@ -10,6 +10,15 @@ interface BoardCardFooterProps {
     onClick: () => void
 }
 export const BoardCardFooter = ({ isFavorites, title, authorLabel, createAtLabel, disabled, onClick }: BoardCardFooterProps) => {
+    
+    const handleOnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.stopPropagation()
+        e.preventDefault()
+        onClick()
+        // toggle favorite
+        // mutate favorite state
+    }
+
     return (
         <div className='relative bg-white p-3'>
             <p className='text-[13px] truncate max-w-[calc(100%-20px)]'>{title}</p>
@@ -18,7 +27,7 @@ export const BoardCardFooter = ({ isFavorites, title, authorLabel, createAtLabel
             </p>
             <button
                 disabled={disabled}
-                onClick={onClick}
+                onClick={handleOnClick}
                 className={cn(
                     'opacity-0 group-hover:opacity-100 transition absolute top-3 right-3 text-muted-foreground hover:text-blue-600',
                     disabled && 'cursor-not-allowed opacity-75'

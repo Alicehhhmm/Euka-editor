@@ -2,14 +2,18 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { toast } from 'sonner'
 import { useAuth } from '@clerk/nextjs'
+import { MoreHorizontal } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { BoardCardOverlay } from './board-card-overlay'
 import { BoardCardFooter } from './board-card-footer'
 import { BoardActions } from './board-actions'
-import { MoreHorizontal } from 'lucide-react'
+
+import { api } from '@/convex/_generated/api'
+import { useApiMutation } from '@/hooks/use-api-mutation'
 
 interface BoardCardProps {
     key: string
@@ -29,6 +33,22 @@ export const BoardCard = ({ id, title, imageUrl, authorId, authorName, createdAt
     const authorLabel = userId === authorId ? 'You' : authorName
     const createAtLabel = formatDistanceToNow(createdAt, { addSuffix: true })
 
+    // 收藏夹功能
+    const { mutate: onFavorite, pending: pendingFavorite } = useApiMutation(api.board.favorite)
+    const { mutate: onUnfavorite, pending: pendingUnfavorite } = useApiMutation(api.board.unFavorite)
+
+    const toggleFavrite = () => {
+        if (isFavorites) {
+            onUnfavorite({ id })
+                .then(() => toast.success('Unfavorite successfully!'))
+                .catch(() => toast.error('Failed to Unfavorite'))
+        } else {
+            onFavorite({ id, orgId })
+                .then(() => toast.success('favorite successfully!'))
+                .catch(() => toast.error('Failed to favorite'))
+        }
+    }
+
     return (
         <Link href={`/board/${id}`}>
             <div className='group aspect-[100/127] border rounded-lg flex flex-col justify-between overflow-hidden'>
@@ -45,9 +65,9 @@ export const BoardCard = ({ id, title, imageUrl, authorId, authorName, createdAt
                     title={title}
                     authorLabel={authorLabel}
                     createAtLabel={createAtLabel}
-                    disabled={false}
+                    disabled={pendingFavorite || pendingUnfavorite}
                     isFavorites={isFavorites}
-                    onClick={() => {}}
+                    onClick={toggleFavrite}
                 />
             </div>
         </Link>

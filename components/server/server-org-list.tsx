@@ -115,7 +115,7 @@ export const ServerOrgList = ({ orgId, query }: ServerOrgListProps) => {
                         authorName={board.authorName}
                         createdAt={board._creationTime}
                         orgId={board.orgId}
-                        isFavorites={false}
+                        isFavorites={board.isFavorite}
                     />
                 ))}
             </div>

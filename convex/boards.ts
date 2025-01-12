@@ -19,6 +19,28 @@ export const get = query({
             .order('desc')
             .collect()
 
-        return boardsList
+        const boardsWithFavoriteRelation = boardsList.map(board => {
+            return ctx.db.query('userFavorites')
+                .withIndex("by_user_board_org", (q) => (
+                    q
+                        .eq("userId", identity.subject)
+                        .eq("boardId", board._id)
+                )
+                ).unique().then(favorite => {
+                    return {
+                        ...board,
+                        isFavorite: !!favorite
+                    }
+                }).catch(() => {
+                    return {
+                        ...board,
+                        isFavorite: false
+                    }
+                })
+        })
+
+        const boardsWithFavoriteBoolean = Promise.all(boardsWithFavoriteRelation)
+
+        return boardsWithFavoriteBoolean
     },
 })
