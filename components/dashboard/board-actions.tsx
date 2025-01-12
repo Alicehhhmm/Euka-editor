@@ -15,6 +15,9 @@ import {
 import { api } from '@/convex/_generated/api'
 import { useApiMutation } from '@/hooks/use-api-mutation'
 
+import { ConfirmModal } from '@/components/modals/confirm-modal'
+import { Button } from '@/components/ui/button'
+
 interface BoardActionsProps {
     id: string
     title: string
@@ -24,7 +27,7 @@ interface BoardActionsProps {
 }
 
 export const BoardActions = ({ id, title, side, sideOffset, children }: BoardActionsProps) => {
-    const { mutate } = useApiMutation(api.board.remove)
+    const { mutate, pending } = useApiMutation(api.board.remove)
 
     const onCopyLink = () => {
         navigator.clipboard
@@ -47,10 +50,17 @@ export const BoardActions = ({ id, title, side, sideOffset, children }: BoardAct
                     <Link2 className='w-4 h-4 mr-2' />
                     Copy board link
                 </DropdownMenuItem>
-                <DropdownMenuItem className='p-3 cursor-pointer' onClick={onDelete}>
-                    <Trash2 className='w-4 h-4 mr-2' />
-                    Delete
-                </DropdownMenuItem>
+                <ConfirmModal
+                    header='Delete board?'
+                    description='This will delete the board and all of its contents.'
+                    disabled={pending}
+                    onConfirm={onDelete}
+                >
+                    <Button variant='ghost' className='w-full justify-start font-normal p-3 cursor-pointer text-sm'>
+                        <Trash2 className='w-4 h-4 mr-2' />
+                        Delete
+                    </Button>
+                </ConfirmModal>
             </DropdownMenuContent>
         </DropdownMenu>
     )
