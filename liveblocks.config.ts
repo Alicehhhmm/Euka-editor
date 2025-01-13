@@ -1,7 +1,6 @@
 import { createClient } from "@liveblocks/client";
 import { createRoomContext, createLiveblocksContext } from "@liveblocks/react";
-
-const publicApiKey = "pk_dev_ZeTngNxZCGfnP3B8D6VEPodeCQ-37FL4p8ZcMDywSGI7yGPG1ckG4oWRNGqM4icY"
+import { useSelf } from "@liveblocks/react/suspense";
 
 // Define Liveblocks types for your application
 // https://liveblocks.io/docs/api-reference/liveblocks-react#Typing-your-data
@@ -19,13 +18,12 @@ declare global {
             // animals: LiveList<string>;
         };
 
-        // Custom user info set when authenticating with a secret key
+        // 对应：app\api\liveblocks-auth\route.ts
         UserMeta: {
-            id: string;
-            info: {
-                // Example properties, for useSelf, useUser, useOthers, etc.
-                // name: string;
-                // avatar: string;
+            id?: string;
+            info?: {
+                name?: string;
+                picture: string;
             };
         };
 
@@ -52,8 +50,7 @@ declare global {
 }
 
 const client = createClient({
-    publicApiKey,
-    // Authenticated,
+    authEndpoint: '/api/liveblocks-auth'
 });
 
 export const { RoomProvider } = createRoomContext(client);
@@ -66,5 +63,6 @@ export const {
 } = createLiveblocksContext(client);
 
 export {
-    client
+    client,
+    useSelf
 };
