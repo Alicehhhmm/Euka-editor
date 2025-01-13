@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useQuery } from 'convex/react'
 import { useOrganization } from '@clerk/nextjs'
 import { toast } from 'sonner'
@@ -19,6 +20,7 @@ interface ServerOrgListProps {
 }
 
 export const ServerOrgList = ({ orgId, query }: ServerOrgListProps) => {
+    const router = useRouter()
     const { search, favorites } = query
     const { organization } = useOrganization()
 
@@ -37,9 +39,9 @@ export const ServerOrgList = ({ orgId, query }: ServerOrgListProps) => {
             orgId: organization.id,
             title: 'Untitled',
         })
-            .then(() => {
+            .then(id => {
                 toast.success('Board created successfully!')
-                // TODO: Redirect to board/{id}
+                router.push(`/board/${id}`)
             })
             .catch(e => {
                 toast.error('Failed to create board: ' + e.message)
