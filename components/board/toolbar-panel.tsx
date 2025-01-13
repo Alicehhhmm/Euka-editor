@@ -1,4 +1,4 @@
-import { Circle } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface ToolbarPanelProps {}
 
@@ -17,6 +17,14 @@ export const ToolbarPanel = ({}: ToolbarPanelProps) => {
                 <div className=''>Redo</div>
                 <div className=''>Link</div>
             </div>
+        </div>
+    )
+}
+
+ToolbarPanel.Skeleton = function ToolbarPanelSkeleton() {
+    return (
+        <div className='bg-white w-[52px] h-[360px] absolute top-[50%] -translate-y-[50%] left-2 flex flex-col gap-y-4 shadow-md rounded-md'>
+            <Skeleton className='h-full w-full bg-muted-400' />
         </div>
     )
 }
