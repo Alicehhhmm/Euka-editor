@@ -7,12 +7,14 @@ import { Poppins } from 'next/font/google'
 import { Button } from '@/components/ui/button'
 import { ActionTooltip } from '@/components/action-tooltip'
 import { Skeleton } from '@/components/ui/skeleton'
+import { BoardActions } from '@/components/dashboard/board-actions'
 
 import { cn } from '@/lib/utils'
 import { useQuery } from 'convex/react'
 import { api } from '@/convex/_generated/api'
 import { Id } from '@/convex/_generated/dataModel'
 import { useModal } from '@/hooks/use-modal-store'
+import { Menu } from 'lucide-react'
 
 interface InfoPanelProps {
     boardId: string
@@ -47,18 +49,30 @@ export const InfoPanel = ({ boardId }: InfoPanelProps) => {
                 </Button>
             </ActionTooltip>
             <TabSeparator />
-            <Button
-                variant='board'
-                className='text-base font-normal px-2'
-                onClick={() =>
-                    onOpen('renameBoard', {
-                        id: data._id,
-                        title: data.title,
-                    })
-                }
-            >
-                {data.title}
-            </Button>
+            <ActionTooltip label='Editor Rename'>
+                <Button
+                    variant='board'
+                    className='text-base font-normal px-2'
+                    onClick={() =>
+                        onOpen('renameBoard', {
+                            id: data._id,
+                            title: data.title,
+                        })
+                    }
+                >
+                    {data.title}
+                </Button>
+            </ActionTooltip>
+            <TabSeparator />
+            <BoardActions id={data._id} title={data.title} side='bottom' sideOffset={10}>
+                <div>
+                    <ActionTooltip label='Main Menu'>
+                        <Button size='icon' variant='board' className=''>
+                            <Menu></Menu>
+                        </Button>
+                    </ActionTooltip>
+                </div>
+            </BoardActions>
         </div>
     )
 }
