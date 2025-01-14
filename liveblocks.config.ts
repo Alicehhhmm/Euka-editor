@@ -63,6 +63,7 @@ declare global {
 }
 
 const client = createClient({
+    throttle: 16,
     authEndpoint: '/api/liveblocks-auth'
 });
 

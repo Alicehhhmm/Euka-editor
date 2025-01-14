@@ -14,20 +14,19 @@ export const Cursor = memo(({ connectionId }: CursorsProps) => {
 
     const name = info?.name || 'Teammate'
 
-    console.log('Cursor:Debug:', name, cursor)
-
     if (!cursor) {
         return null
     }
 
     const { x, y } = cursor
+    console.log('Cursor:Debug:', name, cursor)
 
     return (
         <foreignObject
             width={50}
             height={50}
             style={{
-                transform: `translateX${x} translateY${y}`,
+                transform: `translateX(${x}px) translateY(${y}px)`,
             }}
             className='relation drop-shadow-md'
         >
