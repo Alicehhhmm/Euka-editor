@@ -2,6 +2,7 @@ import { createClient } from "@liveblocks/client";
 import { createRoomContext, createLiveblocksContext } from "@liveblocks/react";
 import {
     useSelf,
+    useOther,
     useOthers,
     useHistory,
     useUndo,
@@ -9,6 +10,7 @@ import {
     useCanUndo,
     useCanRedo,
     useMutation,
+    useOthersConnectionIds
 } from "@liveblocks/react/suspense";
 
 // Define Liveblocks types for your application
@@ -17,8 +19,10 @@ declare global {
     interface Liveblocks {
         // Each user's Presence, for useMyPresence, useOthers, etc.
         Presence: {
-            // Example, real-time cursor coordinates
-            // cursor: { x: number; y: number };
+            cursor: {
+                x: number;
+                y: number
+            } | null;
         };
 
         // The Storage tree for the room, for useMutation, useStorage, etc.
@@ -74,6 +78,7 @@ export const {
 export {
     client,
     useSelf,
+    useOther,
     useOthers,
     useHistory,
     useUndo,
@@ -81,4 +86,5 @@ export {
     useCanUndo,
     useCanRedo,
     useMutation,
+    useOthersConnectionIds
 };

@@ -8,7 +8,7 @@ export type Color = {
 export type Camera = {
     x: number
     y: number
-    z: number
+    z?: number
 }
 
 export type Point = {
@@ -53,7 +53,6 @@ export type RectangleLayer = {
     fill: Color
     value?: string
 }
-
 
 export type EllipseLayer = {
     type: LayerType.Ellipse
