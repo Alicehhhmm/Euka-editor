@@ -1,6 +1,6 @@
 import { createClient } from "@liveblocks/client";
 import { createRoomContext, createLiveblocksContext } from "@liveblocks/react";
-import { useSelf } from "@liveblocks/react/suspense";
+import { useSelf, useOthers } from "@liveblocks/react/suspense";
 
 // Define Liveblocks types for your application
 // https://liveblocks.io/docs/api-reference/liveblocks-react#Typing-your-data
@@ -64,5 +64,6 @@ export const {
 
 export {
     client,
-    useSelf
+    useSelf,
+    useOthers
 };
