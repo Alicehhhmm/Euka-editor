@@ -40,7 +40,7 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
         })
     }, [])
 
-    // 画板-鼠标状态监听
+    // 画板-监听光标移动
     const onPointerMove = useMutation(({ setMyPresence }, e: React.PointerEvent) => {
         e.preventDefault()
 
@@ -48,6 +48,13 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
 
         setMyPresence({
             cursor: current,
+        })
+    }, [])
+
+    // 画板-监听光标离开画布
+    const onPointerLeave = useMutation(({ setMyPresence }) => {
+        setMyPresence({
+            cursor: null,
         })
     }, [])
 
@@ -66,7 +73,7 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
                 canUndo={canUndo}
                 canRedo={canRedo}
             />
-            <EukaDrawBoard onWheel={onWheel} onPointerMove={onPointerMove} />
+            <EukaDrawBoard onWheel={onWheel} onPointerMove={onPointerMove} onPointerLeave={onPointerLeave} />
         </main>
     )
 }
