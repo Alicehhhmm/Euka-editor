@@ -3,7 +3,7 @@ import { Circle, MousePointer2, Pencil, Redo2, Square, StickyNote, Type, Undo2 }
 import { Skeleton } from '@/components/ui/skeleton'
 import { ToolButton } from '@/components/board/tool-button'
 
-import { CanvasMode, CanvasState, LayerType } from '@/types/canvas'
+import { CanvasMode, CanvasState, LayerType } from '@/euka-core/types/canvas'
 
 interface ToolbarPanelProps {
     canvasState: CanvasState

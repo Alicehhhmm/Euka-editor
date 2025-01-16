@@ -1,4 +1,4 @@
-import { Camera } from "@/types/canvas";
+import { Camera } from "@/euka-core/types/canvas";
 
 export function pointerEventToCanvasPoint(
     e: React.PointerEvent,

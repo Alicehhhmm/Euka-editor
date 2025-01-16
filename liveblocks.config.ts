@@ -1,4 +1,4 @@
-import { createClient } from "@liveblocks/client";
+import { createClient, LiveList, LiveMap, LiveObject } from "@liveblocks/client";
 import { createRoomContext, createLiveblocksContext } from "@liveblocks/react";
 import {
     useSelf,
@@ -10,8 +10,11 @@ import {
     useCanUndo,
     useCanRedo,
     useMutation,
+    useStorage,
     useOthersConnectionIds
 } from "@liveblocks/react/suspense";
+
+import { Layer, Color } from "@/euka-core/types/canvas";
 
 // Define Liveblocks types for your application
 // https://liveblocks.io/docs/api-reference/liveblocks-react#Typing-your-data
@@ -23,12 +26,14 @@ declare global {
                 x: number;
                 y: number
             } | null;
+            selection: string[]
         };
 
         // The Storage tree for the room, for useMutation, useStorage, etc.
         Storage: {
-            // Example, a conflict-free list
             // animals: LiveList<string>;
+            layers: LiveMap<string, LiveObject<Layer>>
+            layerIds: LiveList<string>
         };
 
         // 对应：app\api\liveblocks-auth\route.ts
@@ -87,5 +92,6 @@ export {
     useCanUndo,
     useCanRedo,
     useMutation,
+    useStorage,
     useOthersConnectionIds
 };

@@ -96,6 +96,12 @@ export type NoteLayer = {
 }
 
 /**
+ * 图层
+ */
+export type Layer = RectangleLayer | EllipseLayer | PathLayer | TextLayer | NoteLayer
+
+
+/**
  * canvas status 
  * @param
  */
