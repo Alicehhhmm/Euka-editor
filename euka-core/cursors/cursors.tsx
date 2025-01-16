@@ -19,11 +19,10 @@ export const Cursor = memo(({ connectionId }: CursorsProps) => {
     }
 
     const { x, y } = cursor
-    console.log('Cursor:Debug:', name, cursor)
 
     return (
         <foreignObject
-            width={50}
+            width={name.length * 10 + 24}
             height={50}
             style={{
                 transform: `translateX(${x}px) translateY(${y}px)`,
@@ -37,6 +36,12 @@ export const Cursor = memo(({ connectionId }: CursorsProps) => {
                     color: GenColors(connectionId),
                 }}
             />
+            <div
+                className='absolute left-5 px-1.5 py-0.5 rounded-md text-xs text-white font-semibold'
+                style={{ backgroundColor: GenColors(connectionId) }}
+            >
+                {name}
+            </div>
         </foreignObject>
     )
 })

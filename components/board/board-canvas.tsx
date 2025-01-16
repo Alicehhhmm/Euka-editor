@@ -31,7 +31,6 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
     const canRedo = useCanRedo()
 
     const onWheel = useCallback((e: React.WheelEvent) => {
-        console.log('onWheel')
         setCamera(camera => {
             const { x, y } = camera
             return {
@@ -46,7 +45,6 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
         e.preventDefault()
 
         const current = pointerEventToCanvasPoint(e, camera)
-        console.log('onPointerMove', current)
 
         setMyPresence({
             cursor: current,
