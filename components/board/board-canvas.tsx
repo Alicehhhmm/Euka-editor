@@ -132,8 +132,8 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
             <ToolbarPanel
                 canvasState={canvasState}
                 setCanvasState={setCanvasState}
-                undo={() => {}}
-                redo={() => {}}
+                undo={() => hsitory.undo()}
+                redo={() => hsitory.redo()}
                 canUndo={canUndo}
                 canRedo={canRedo}
             />
