@@ -3,6 +3,7 @@
 import { Camera } from './types/canvas'
 import { CursorsPresence } from './cursors/cursors-presence'
 import { LayerPreview } from './layer/layer-preview'
+import { SelectionBox } from './selection-box'
 
 interface DrawBoardProps {
     layerIds: readonly string[]
@@ -48,6 +49,7 @@ export const EukaDrawBoard = ({
                             selectionColor={selectionColor[layerId]}
                         />
                     ))}
+                    <SelectionBox onResizeHandlePionterDown={() => {}} />
                     <CursorsPresence />
                 </g>
             </svg>
