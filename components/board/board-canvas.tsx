@@ -1,12 +1,12 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useMemo } from 'react'
 import { nanoid } from 'nanoid'
 import { LiveObject } from '@liveblocks/client'
 
-import { useHistory, useCanUndo, useCanRedo, useMutation, useStorage } from '@/liveblocks.config'
-import { CanvasState, CanvasMode, Camera, Color, LayerType, Point } from '@/euka-core/types/canvas'
+import { useHistory, useCanUndo, useCanRedo, useMutation, useStorage, useOthersMapped } from '@/liveblocks.config'
 
+import { CanvasState, CanvasMode, Camera, Color, LayerType, Point } from '@/euka-core/types/canvas'
 import { EukaDrawBoard } from '@/euka-core'
 import { MAX_LAYERS } from '@/euka-core/settings'
 import { pointerEventToCanvasPoint } from '@/euka-core/_utils'
@@ -14,6 +14,7 @@ import { pointerEventToCanvasPoint } from '@/euka-core/_utils'
 import { InfoPanel } from './info-panel'
 import { ToolbarPanel } from './toolbar-panel'
 import { ParticipantsPanel } from './participants-panel'
+import { GenColors } from '@/lib/utils'
 
 interface BoardCanvasProps {
     boardId: string
@@ -125,6 +126,55 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
         [camera, canvasState, history, insertLayer]
     )
 
+    // 画板-监听点击选择图层
+    const onLayerPointerDown = useMutation(
+        ({ self, setMyPresence }, e: React.PointerEvent, layerId: string) => {
+            if (canvasState.mode === CanvasMode.Pencil || canvasState.mode === CanvasMode.Inserting) {
+                return
+            }
+
+            // 不插入操作记录
+            hsitory.pause()
+            e.stopPropagation()
+
+            const point = pointerEventToCanvasPoint(e, camera)
+
+            if (!self.presence.selection.includes(layerId)) {
+                setMyPresence(
+                    {
+                        selection: [layerId],
+                    },
+                    {
+                        addToHistory: true,
+                    }
+                )
+            }
+
+            setCanvasState({
+                mode: CanvasMode.Translating,
+                current: point,
+            })
+        },
+        [setCanvasState, camera, history, canvasState.mode]
+    )
+
+    // 画板-选择图层元素
+    const selections = useOthersMapped(other => other.presence.selection)
+
+    const layerIdsColorsSelection = useMemo(() => {
+        const layerIdsToColorSelectionObj: Record<string, string> = {}
+
+        for (const user of selections) {
+            const [connectionId, selection] = user
+
+            for (const layerId of selection) {
+                layerIdsToColorSelectionObj[layerId] = GenColors(connectionId)
+            }
+        }
+
+        return layerIdsToColorSelectionObj
+    }, [selections])
+
     return (
         <main className='h-full w-full relative bg-neutral-100 touch-none'>
             <InfoPanel boardId={boardId} />
@@ -132,18 +182,20 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
             <ToolbarPanel
                 canvasState={canvasState}
                 setCanvasState={setCanvasState}
-                undo={() => hsitory.undo()}
-                redo={() => hsitory.redo()}
+                undo={hsitory.undo}
+                redo={hsitory.redo}
                 canUndo={canUndo}
                 canRedo={canRedo}
             />
             <EukaDrawBoard
                 layerIds={layerIds}
                 camera={camera}
+                selectionColor={layerIdsColorsSelection}
                 onWheel={onWheel}
                 onPointerMove={onPointerMove}
                 onPointerLeave={onPointerLeave}
                 onPointerUp={onPointerUp}
+                onLayerPointerDown={onLayerPointerDown}
             />
         </main>
     )

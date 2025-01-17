@@ -11,7 +11,8 @@ import {
     useCanRedo,
     useMutation,
     useStorage,
-    useOthersConnectionIds
+    useOthersConnectionIds,
+    useOthersMapped
 } from "@liveblocks/react/suspense";
 
 import { Layer, Color } from "@/euka-core/types/canvas";
@@ -93,5 +94,6 @@ export {
     useCanRedo,
     useMutation,
     useStorage,
-    useOthersConnectionIds
+    useOthersConnectionIds,
+    useOthersMapped
 };

@@ -7,13 +7,24 @@ import { LayerPreview } from './layer/layer-preview'
 interface DrawBoardProps {
     layerIds: readonly string[]
     camera: Camera
+    selectionColor: Record<string, string>
     onWheel: (e: React.WheelEvent) => void
     onPointerMove: (e: React.PointerEvent) => void
     onPointerLeave: (e: React.PointerEvent) => void
     onPointerUp: (e: React.PointerEvent) => void
+    onLayerPointerDown: (e: React.PointerEvent, layerId: string) => void
 }
 
-export const EukaDrawBoard = ({ layerIds, camera, onWheel, onPointerMove, onPointerLeave, onPointerUp }: DrawBoardProps) => {
+export const EukaDrawBoard = ({
+    layerIds,
+    camera,
+    selectionColor,
+    onWheel,
+    onPointerMove,
+    onPointerLeave,
+    onPointerUp,
+    onLayerPointerDown,
+}: DrawBoardProps) => {
     return (
         <main className='w-full h-full'>
             <svg
@@ -30,7 +41,12 @@ export const EukaDrawBoard = ({ layerIds, camera, onWheel, onPointerMove, onPoin
                     }}
                 >
                     {layerIds.map(layerId => (
-                        <LayerPreview key={layerId} id={layerId} onLayerPointerDown={() => {}} selectionColor={'#000'} />
+                        <LayerPreview
+                            key={layerId}
+                            id={layerId}
+                            onLayerPointerDown={onLayerPointerDown}
+                            selectionColor={selectionColor[layerId]}
+                        />
                     ))}
                     <CursorsPresence />
                 </g>
