@@ -6,10 +6,10 @@ import { LiveObject } from '@liveblocks/client'
 
 import { useHistory, useCanUndo, useCanRedo, useMutation, useStorage, useOthersMapped } from '@/liveblocks.config'
 
-import { CanvasState, CanvasMode, Camera, Color, LayerType, Point } from '@/euka-core/types/canvas'
+import { CanvasState, CanvasMode, Camera, Color, LayerType, Point, Side, XYWH } from '@/euka-core/types/canvas'
 import { EukaDrawBoard } from '@/euka-core'
 import { MAX_LAYERS } from '@/euka-core/settings'
-import { pointerEventToCanvasPoint } from '@/euka-core/_utils'
+import { pointerEventToCanvasPoint, resizeBounds } from '@/euka-core/_utils'
 
 import { InfoPanel } from './info-panel'
 import { ToolbarPanel } from './toolbar-panel'
@@ -31,7 +31,7 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
     const [lastUsedColor, setlastUsedColor] = useState<Color>({ r: 0, g: 0, b: 0 })
 
     // 画板-操作记录
-    const hsitory = useHistory()
+    const history = useHistory()
     const canUndo = useCanUndo()
     const canRedo = useCanRedo()
 
@@ -78,6 +78,40 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
         [lastUsedColor]
     )
 
+    // 画板-监图层触发手柄位置
+    const onResizeHandlePionterDown = useCallback(
+        (corner: Side, initialBounds: XYWH) => {
+            history.pause()
+            setCanvasState({
+                mode: CanvasMode.Resizing,
+                initialBounds,
+                corner,
+            })
+        },
+        [history]
+    )
+
+    // 画板-监听选择图层边框调整大小
+    const resizeSelectedLayer = useMutation(
+        ({ storage, self }, point) => {
+            console.log(`resizeSelectedLayer`, point)
+            if (canvasState.mode !== CanvasMode.Resizing) {
+                return
+            }
+
+            const bounds = resizeBounds(canvasState.initialBounds, canvasState.corner, point)
+
+            const liveLayers = storage.get('layers')
+            const layer = liveLayers.get(self.presence.selection[0])
+
+            if (layer) {
+                layer.update(bounds)
+            }
+        },
+        [canvasState]
+    )
+
+    // 画板-监听鼠标滚轮变化
     const onWheel = useCallback((e: React.WheelEvent) => {
         setCamera(camera => {
             const { x, y } = camera
@@ -89,15 +123,24 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
     }, [])
 
     // 画板-监听光标移动
-    const onPointerMove = useMutation(({ setMyPresence }, e: React.PointerEvent) => {
-        e.preventDefault()
+    const onPointerMove = useMutation(
+        ({ setMyPresence }, e: React.PointerEvent) => {
+            e.preventDefault()
 
-        const current = pointerEventToCanvasPoint(e, camera)
+            const current = pointerEventToCanvasPoint(e, camera)
 
-        setMyPresence({
-            cursor: current,
-        })
-    }, [])
+            // 以动边框调整大小
+            if (canvasState.mode === CanvasMode.Resizing) {
+                console.log(`onPointerMove_Resizing`, current)
+                resizeSelectedLayer(current)
+            }
+
+            setMyPresence({
+                cursor: current,
+            })
+        },
+        [camera, canvasState, resizeSelectedLayer]
+    )
 
     // 画板-监听光标离开画布
     const onPointerLeave = useMutation(({ setMyPresence }) => {
@@ -121,7 +164,7 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
             }
 
             // 恢复操作历史记录
-            hsitory.resume()
+            history.resume()
         },
         [camera, canvasState, history, insertLayer]
     )
@@ -134,7 +177,7 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
             }
 
             // 不插入操作记录
-            hsitory.pause()
+            history.pause()
             e.stopPropagation()
 
             const point = pointerEventToCanvasPoint(e, camera)
@@ -182,8 +225,8 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
             <ToolbarPanel
                 canvasState={canvasState}
                 setCanvasState={setCanvasState}
-                undo={hsitory.undo}
-                redo={hsitory.redo}
+                undo={history.undo}
+                redo={history.redo}
                 canUndo={canUndo}
                 canRedo={canRedo}
             />
@@ -196,6 +239,7 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
                 onPointerLeave={onPointerLeave}
                 onPointerUp={onPointerUp}
                 onLayerPointerDown={onLayerPointerDown}
+                onResizeHandlePionterDown={onResizeHandlePionterDown}
             />
         </main>
     )

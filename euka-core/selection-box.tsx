@@ -17,13 +17,22 @@ const STROKE_WIDTH = 1
 
 /**
  * 选择边框的八个点(手柄)
- * 【1】——【2】——【3】
+ * 【5】——【1】——【9】
  *  |             |
- * 【8】        【4】
+ * 【4】        【8】
  *  |             |
- * 【7】——【6】——【5】
- * @param param0
- * @returns
+ * 【6】——【2】——【10】
+ * 编码规则：上下左右，左上左下，右上右下（1248，56，910）
+ * 1: Top
+ * 2: Bottom
+ * 4: Left
+ * 8: Right
+ * 5: Top + Left
+ * 9: Top + Right
+ * 6: Bottom + Left
+ * 10: Bottom + Right
+ * @param param onResizeHandlePionterDown
+ * @returns element resize
  */
 export const SelectionBox = memo(({ onResizeHandlePionterDown }: SelectionBoxProps) => {
     // 图层ID
@@ -79,7 +88,7 @@ export const SelectionBox = memo(({ onResizeHandlePionterDown }: SelectionBoxPro
                         }}
                         onPointerDown={e => {
                             e.stopPropagation()
-                            // TODO: Add resize handle
+                            onResizeHandlePionterDown(Side.Top + Side.Left, bounds)
                         }}
                     />
                     {/* 2 */}
@@ -102,7 +111,7 @@ export const SelectionBox = memo(({ onResizeHandlePionterDown }: SelectionBoxPro
                         }}
                         onPointerDown={e => {
                             e.stopPropagation()
-                            // TODO: Add resize handle
+                            onResizeHandlePionterDown(Side.Top, bounds)
                         }}
                     />
                     {/* 3 */}
@@ -125,7 +134,7 @@ export const SelectionBox = memo(({ onResizeHandlePionterDown }: SelectionBoxPro
                         }}
                         onPointerDown={e => {
                             e.stopPropagation()
-                            // TODO: Add resize handle
+                            onResizeHandlePionterDown(Side.Top + Side.Right, bounds)
                         }}
                     />
                     {/* 4 */}
@@ -148,7 +157,7 @@ export const SelectionBox = memo(({ onResizeHandlePionterDown }: SelectionBoxPro
                         }}
                         onPointerDown={e => {
                             e.stopPropagation()
-                            // TODO: Add resize handle
+                            onResizeHandlePionterDown(Side.Right, bounds)
                         }}
                     />
                     {/* 5 */}
@@ -171,7 +180,7 @@ export const SelectionBox = memo(({ onResizeHandlePionterDown }: SelectionBoxPro
                         }}
                         onPointerDown={e => {
                             e.stopPropagation()
-                            // TODO: Add resize handle
+                            onResizeHandlePionterDown(Side.Bottom + Side.Right, bounds)
                         }}
                     />
                     {/* 6 */}
@@ -194,7 +203,7 @@ export const SelectionBox = memo(({ onResizeHandlePionterDown }: SelectionBoxPro
                         }}
                         onPointerDown={e => {
                             e.stopPropagation()
-                            // TODO: Add resize handle
+                            onResizeHandlePionterDown(Side.Bottom, bounds)
                         }}
                     />
                     {/* 7 */}
@@ -217,7 +226,7 @@ export const SelectionBox = memo(({ onResizeHandlePionterDown }: SelectionBoxPro
                         }}
                         onPointerDown={e => {
                             e.stopPropagation()
-                            // TODO: Add resize handle
+                            onResizeHandlePionterDown(Side.Bottom + Side.Left, bounds)
                         }}
                     />
                     {/* 8 */}
@@ -240,7 +249,7 @@ export const SelectionBox = memo(({ onResizeHandlePionterDown }: SelectionBoxPro
                         }}
                         onPointerDown={e => {
                             e.stopPropagation()
-                            // TODO: Add resize handle
+                            onResizeHandlePionterDown(Side.Left, bounds)
                         }}
                     />
                 </>

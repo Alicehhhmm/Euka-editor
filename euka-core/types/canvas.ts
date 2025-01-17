@@ -25,10 +25,26 @@ export type XYWH = {
 
 /**
  * Side model
+ *  选择边框的八个点(手柄)
+ * 【5】——【1】——【9】
+ *  |             |
+ * 【4】        【8】
+ *  |             |
+ * 【6】——【2】——【10】
+ *
+ * 编码规则：上下左右，左上左下，右上右下（1248，56，910）
+ * 1: Top
+ * 2: Bottom
+ * 4: Left
+ * 8: Right
+ * 5: Top + Left
+ * 9: Top + Right
+ * 6: Bottom + Left
+ * 10: Bottom + Right
  */
 export enum Side {
     Top = 1,
-    Botton = 2,
+    Bottom = 2,
     Left = 4,
     Right = 8,
 }
@@ -132,7 +148,7 @@ export type CanvasState =
     | {
         mode: CanvasMode.Resizing;
         initialBounds: XYWH;
-        current: Side
+        corner: Side
     }
 
 /**

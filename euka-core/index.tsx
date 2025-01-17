@@ -1,6 +1,6 @@
 'use client'
 
-import { Camera } from './types/canvas'
+import { Camera, Side, XYWH } from './types/canvas'
 import { CursorsPresence } from './cursors/cursors-presence'
 import { LayerPreview } from './layer/layer-preview'
 import { SelectionBox } from './selection-box'
@@ -14,6 +14,7 @@ interface DrawBoardProps {
     onPointerLeave: (e: React.PointerEvent) => void
     onPointerUp: (e: React.PointerEvent) => void
     onLayerPointerDown: (e: React.PointerEvent, layerId: string) => void
+    onResizeHandlePionterDown: (corner: Side, initialBounds: XYWH) => void
 }
 
 export const EukaDrawBoard = ({
@@ -25,6 +26,7 @@ export const EukaDrawBoard = ({
     onPointerLeave,
     onPointerUp,
     onLayerPointerDown,
+    onResizeHandlePionterDown,
 }: DrawBoardProps) => {
     return (
         <main className='w-full h-full'>
@@ -49,7 +51,7 @@ export const EukaDrawBoard = ({
                             selectionColor={selectionColor[layerId]}
                         />
                     ))}
-                    <SelectionBox onResizeHandlePionterDown={() => {}} />
+                    <SelectionBox onResizeHandlePionterDown={onResizeHandlePionterDown} />
                     <CursorsPresence />
                 </g>
             </svg>
