@@ -12,6 +12,7 @@ interface DrawBoardProps {
     onWheel: (e: React.WheelEvent) => void
     onPointerMove: (e: React.PointerEvent) => void
     onPointerLeave: (e: React.PointerEvent) => void
+    onPointerDown: (e: React.PointerEvent) => void
     onPointerUp: (e: React.PointerEvent) => void
     onLayerPointerDown: (e: React.PointerEvent, layerId: string) => void
     onResizeHandlePionterDown: (corner: Side, initialBounds: XYWH) => void
@@ -24,6 +25,7 @@ export const EukaDrawBoard = ({
     onWheel,
     onPointerMove,
     onPointerLeave,
+    onPointerDown,
     onPointerUp,
     onLayerPointerDown,
     onResizeHandlePionterDown,
@@ -36,6 +38,7 @@ export const EukaDrawBoard = ({
                 onWheel={onWheel}
                 onPointerMove={onPointerMove}
                 onPointerLeave={onPointerLeave}
+                onPointerDown={onPointerDown}
                 onPointerUp={onPointerUp}
             >
                 <g

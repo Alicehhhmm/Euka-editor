@@ -111,6 +111,53 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
         [canvasState]
     )
 
+    // 画板-监听选择元素移动（或内部区域鼠标移动）
+    const translateSelectedLayers = useMutation(
+        ({ storage, self }, point: Point) => {
+            if (canvasState.mode !== CanvasMode.Translating) {
+                return
+            }
+
+            const offset = {
+                x: point.x - canvasState.current.x,
+                y: point.y - canvasState.current.y,
+            }
+
+            const livelayers = storage.get('layers')
+
+            for (const id of self.presence.selection) {
+                const layer = livelayers.get(id)
+
+                if (layer) {
+                    layer.update({
+                        x: layer.get('x') + offset.x,
+                        y: layer.get('y') + offset.y,
+                    })
+                }
+            }
+
+            setCanvasState({
+                mode: CanvasMode.Translating,
+                current: point,
+            })
+        },
+        [canvasState]
+    )
+
+    // 画板-监听鼠标非选中图层区域
+    const unselectLayers = useMutation(({ self, setMyPresence }) => {
+        if (self.presence.selection.length > 0) {
+            setMyPresence(
+                {
+                    selection: [],
+                },
+                {
+                    addToHistory: true,
+                }
+            )
+        }
+    }, [])
+
     // 画板-监听鼠标滚轮变化
     const onWheel = useCallback((e: React.WheelEvent) => {
         setCamera(camera => {
@@ -129,9 +176,11 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
 
             const current = pointerEventToCanvasPoint(e, camera)
 
-            // 以动边框调整大小
-            if (canvasState.mode === CanvasMode.Resizing) {
-                console.log(`onPointerMove_Resizing`, current)
+            if (canvasState.mode === CanvasMode.Translating) {
+                // 选择元素移动
+                translateSelectedLayers(current)
+            } else if (canvasState.mode === CanvasMode.Resizing) {
+                // 移动边框调整大小
                 resizeSelectedLayer(current)
             }
 
@@ -149,13 +198,37 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
         })
     }, [])
 
+    // 画板-监听鼠标按下
+    const onPointerDown = useCallback(
+        (e: React.PointerEvent) => {
+            const point = pointerEventToCanvasPoint(e, camera)
+
+            if (canvasState.mode === CanvasMode.Inserting) {
+                return
+            }
+
+            // TODO: Add case for drawing
+
+            setCanvasState({
+                mode: CanvasMode.Pressing,
+                origin: point,
+            })
+        },
+        [camera, canvasState.mode, setCanvasState]
+    )
+
     // 画板-监听光标抬起
     const onPointerUp = useMutation(
         ({}, e: React.PointerEvent) => {
             const point = pointerEventToCanvasPoint(e, camera)
-            console.log('onPointerUp', point, canvasState)
 
-            if (canvasState.mode === CanvasMode.Inserting) {
+            if (canvasState.mode === CanvasMode.None || canvasState.mode === CanvasMode.Pressing) {
+                // 取消选择的元素（或：监听点击非选中元素区域）
+                unselectLayers()
+                setCanvasState({
+                    mode: CanvasMode.None,
+                })
+            } else if (canvasState.mode === CanvasMode.Inserting) {
                 insertLayer(canvasState.layerType, point)
             } else {
                 setCanvasState({
@@ -166,7 +239,7 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
             // 恢复操作历史记录
             history.resume()
         },
-        [camera, canvasState, history, insertLayer]
+        [camera, canvasState, history, insertLayer, unselectLayers]
     )
 
     // 画板-监听点击选择图层
@@ -237,6 +310,7 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
                 onWheel={onWheel}
                 onPointerMove={onPointerMove}
                 onPointerLeave={onPointerLeave}
+                onPointerDown={onPointerDown}
                 onPointerUp={onPointerUp}
                 onLayerPointerDown={onLayerPointerDown}
                 onResizeHandlePionterDown={onResizeHandlePionterDown}
