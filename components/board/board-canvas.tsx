@@ -9,6 +9,7 @@ import { useHistory, useCanUndo, useCanRedo, useMutation, useStorage, useOthersM
 import { CanvasState, CanvasMode, Camera, Color, LayerType, Point, Side, XYWH } from '@/euka-core/types/canvas'
 import { EukaDrawBoard } from '@/euka-core'
 import { MAX_LAYERS } from '@/euka-core/settings'
+import { SelectionsTools } from '@/euka-core/selections-tools'
 import { pointerEventToCanvasPoint, resizeBounds } from '@/euka-core/_utils'
 
 import { InfoPanel } from './info-panel'
@@ -28,7 +29,7 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
         mode: CanvasMode.None,
     })
     const [camera, setCamera] = useState<Camera>({ x: 0, y: 0 })
-    const [lastUsedColor, setlastUsedColor] = useState<Color>({ r: 0, g: 0, b: 0 })
+    const [lastUsedColor, setLastUsedColor] = useState<Color>({ r: 0, g: 0, b: 0 })
 
     // 画板-操作记录
     const history = useHistory()
@@ -303,6 +304,7 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
                 canUndo={canUndo}
                 canRedo={canRedo}
             />
+            <SelectionsTools camera={camera} setLastUsedColor={setLastUsedColor} />
             <EukaDrawBoard
                 layerIds={layerIds}
                 camera={camera}
