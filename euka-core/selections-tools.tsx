@@ -1,12 +1,17 @@
 'use client'
 
 import { memo } from 'react'
-import { useMutation, useSelf } from '@/liveblocks.config'
+import { Trash2 } from 'lucide-react'
+
+import { ActionTooltip } from '@/components/action-tooltip'
+import { Button } from '@/components/ui/button'
 
 import { Camera, Color } from './types/canvas'
 import { ColorPicker } from './color-picker'
 
+import { useMutation, useSelf } from '@/liveblocks.config'
 import { useSelectionBounds } from '@/hooks/use-selection-bounds'
+import { useDeleteLayers } from '@/hooks/use-delete-layers'
 
 interface SelectionsToolsProps {
     camera: Camera
@@ -24,6 +29,8 @@ export const SelectionsTools = memo(({ camera, setLastUsedColor }: SelectionsToo
         },
         [selection, setLastUsedColor]
     )
+
+    const deleteLayer = useDeleteLayers()
 
     const selectionBounds = useSelectionBounds()
 
@@ -48,6 +55,13 @@ export const SelectionsTools = memo(({ camera, setLastUsedColor }: SelectionsToo
         >
             {/* Aadd Tools */}
             <ColorPicker onChange={setFill} />
+            <div className='flex items-center pl-2 ml-2 border-l border-neutral-200'>
+                <ActionTooltip label='delete layer'>
+                    <Button variant='board' size='icon' onClick={deleteLayer}>
+                        <Trash2 />
+                    </Button>
+                </ActionTooltip>
+            </div>
         </div>
     )
 })
