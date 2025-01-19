@@ -33,26 +33,35 @@ export function resizeBounds(
         height: bounds.height,
     }
 
+    /**
+    * 与运算（&）
+    * 进行位与运算时，每一位的结果只有在两个操作数的对应位都为 1 时才为 1，否则为 0
+    *   0101 (5)
+    * & 0001 (1)
+    * ------
+    *   0001 (1)
+    * 
+    */
     // 拖动的是顶部角或边
-    if ((corner && Side.Top) === Side.Top) {
+    if ((corner & Side.Top) === Side.Top) {
         result.y = Math.min(point.y, bounds.y + bounds.height)
         result.height = Math.abs(bounds.y + bounds.height - point.y)
     }
 
     // 拖动的是底部角或边
-    if ((corner && Side.Bottom) === Side.Bottom) {
+    if ((corner & Side.Bottom) === Side.Bottom) {
         result.y = Math.min(point.y, bounds.y);
         result.height = Math.abs(bounds.y - point.y);
     }
 
     // 拖动的是左侧角或边
-    if ((corner && Side.Left) === Side.Left) {
+    if ((corner & Side.Left) === Side.Left) {
         result.x = Math.min(point.x, bounds.x + bounds.width)
         result.width = Math.abs(bounds.x + bounds.width - point.x)
     }
 
     // 拖动的是右侧角或边
-    if ((corner && Side.Right) === Side.Right) {
+    if ((corner & Side.Right) === Side.Right) {
         result.x = Math.min(point.x, bounds.x)
         result.width = Math.abs(bounds.x - point.x)
     }
