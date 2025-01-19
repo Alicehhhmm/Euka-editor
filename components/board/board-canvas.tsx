@@ -10,7 +10,7 @@ import { CanvasState, CanvasMode, Camera, Color, LayerType, Point, Side, XYWH } 
 import { EukaDrawBoard } from '@/euka-core'
 import { MAX_LAYERS } from '@/euka-core/settings'
 import { SelectionsTools } from '@/euka-core/selections-tools'
-import { pointerEventToCanvasPoint, resizeBounds } from '@/euka-core/_utils'
+import { findIntersectingLayersWithRectangle, pointerEventToCanvasPoint, resizeBounds } from '@/euka-core/_utils'
 
 import { InfoPanel } from './info-panel'
 import { ToolbarPanel } from './toolbar-panel'
@@ -145,6 +145,36 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
         [canvasState]
     )
 
+    // 画板-监听选中图层数量
+    const starMultiSelection = useCallback((current: Point, origin: Point) => {
+        const threshold = 5
+
+        if (Math.abs(current.x - origin.x) + Math.abs(current.y - origin.y) > threshold) {
+            setCanvasState({
+                mode: CanvasMode.SelectionNet,
+                origin,
+                current,
+            })
+        }
+    }, [])
+
+    // 画板-更新选中的所有图层网格（更新图层多选网格）
+    const updateSelevtionNet = useMutation(
+        ({ storage, setMyPresence }, current: Point, origin: Point) => {
+            const layers = storage.get('layers').toImmutable()
+            setCanvasState({
+                mode: CanvasMode.SelectionNet,
+                origin,
+                current,
+            })
+
+            const ids = findIntersectingLayersWithRectangle(layerIds, layers, origin, current)
+
+            setMyPresence({ selection: ids })
+        },
+        [layerIds]
+    )
+
     // 画板-监听鼠标非选中图层区域
     const unselectLayers = useMutation(({ self, setMyPresence }) => {
         if (self.presence.selection.length > 0) {
@@ -176,8 +206,13 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
             e.preventDefault()
 
             const current = pointerEventToCanvasPoint(e, camera)
-
-            if (canvasState.mode === CanvasMode.Translating) {
+            if (canvasState.mode === CanvasMode.Pressing) {
+                //
+                starMultiSelection(current, canvasState.origin)
+            } else if (canvasState.mode === CanvasMode.SelectionNet) {
+                //
+                updateSelevtionNet(current, canvasState.origin)
+            } else if (canvasState.mode === CanvasMode.Translating) {
                 // 选择元素移动
                 translateSelectedLayers(current)
             } else if (canvasState.mode === CanvasMode.Resizing) {
@@ -308,6 +343,7 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
             <EukaDrawBoard
                 layerIds={layerIds}
                 camera={camera}
+                canvasState={canvasState}
                 selectionColor={layerIdsColorsSelection}
                 onWheel={onWheel}
                 onPointerMove={onPointerMove}

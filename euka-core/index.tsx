@@ -1,6 +1,6 @@
 'use client'
 
-import { Camera, Side, XYWH } from './types/canvas'
+import { Camera, CanvasState, CanvasMode, Side, XYWH } from './types/canvas'
 import { CursorsPresence } from './cursors/cursors-presence'
 import { LayerPreview } from './layer/layer-preview'
 import { SelectionBox } from './selection-box'
@@ -8,6 +8,8 @@ import { SelectionBox } from './selection-box'
 interface DrawBoardProps {
     layerIds: readonly string[]
     camera: Camera
+    canvasState: CanvasState
+    setCanvasState?: (newState: CanvasState) => void
     selectionColor: Record<string, string>
     onWheel: (e: React.WheelEvent) => void
     onPointerMove: (e: React.PointerEvent) => void
@@ -21,6 +23,8 @@ interface DrawBoardProps {
 export const EukaDrawBoard = ({
     layerIds,
     camera,
+    canvasState,
+    setCanvasState,
     selectionColor,
     onWheel,
     onPointerMove,
@@ -55,6 +59,20 @@ export const EukaDrawBoard = ({
                         />
                     ))}
                     <SelectionBox onResizeHandlePionterDown={onResizeHandlePionterDown} />
+                    {canvasState.mode === CanvasMode.SelectionNet && canvasState.current != null && (
+                        <rect
+                            x={Math.min(canvasState.origin.x, canvasState.current.x)}
+                            y={Math.min(canvasState.origin.y, canvasState.current.y)}
+                            width={Math.abs(canvasState.origin.x - canvasState.current.x)}
+                            height={Math.abs(canvasState.origin.y - canvasState.current.y)}
+                            className='fill-blue-500 stroke-blue-500 stroke-1'
+                            style={{
+                                fill: 'transparent',
+                                stroke: `${'#0ea5e9'}`,
+                                strokeWidth: 1,
+                            }}
+                        />
+                    )}
                     <CursorsPresence />
                 </g>
             </svg>
