@@ -1,7 +1,7 @@
 'use client'
 
 import { memo } from 'react'
-import { Trash2 } from 'lucide-react'
+import { BringToFront, SendToBack, Trash2 } from 'lucide-react'
 
 import { ActionTooltip } from '@/components/action-tooltip'
 import { Button } from '@/components/ui/button'
@@ -20,6 +20,50 @@ interface SelectionsToolsProps {
 export const SelectionsTools = memo(({ camera, setLastUsedColor }: SelectionsToolsProps) => {
     const selection = useSelf(me => me.presence.selection)
 
+    // 将选中图层-移置最顶层
+    const moveToFront = useMutation(
+        ({ storage }) => {
+            const liveLayerIds = storage.get('layerIds')
+            const indices: number[] = []
+
+            const arr = liveLayerIds.toArray()
+
+            for (let i = 0; i < arr.length; i++) {
+                if (selection.includes(arr[i])) {
+                    indices.push(i)
+                }
+            }
+
+            // 确保 i 从最后一个元素索引递减到 0
+            for (let i = indices.length - 1; i >= 0; i--) {
+                liveLayerIds.move(indices[i], arr.length - 1 - (indices.length - 1 - i))
+            }
+        },
+        [selection]
+    )
+
+    // 将选中图层-移置最底层
+    const moveToBack = useMutation(
+        ({ storage }) => {
+            const liveLayerIds = storage.get('layerIds')
+            const indices: number[] = []
+
+            const arr = liveLayerIds.toArray()
+
+            for (let i = 0; i < arr.length; i++) {
+                if (selection.includes(arr[i])) {
+                    indices.push(i)
+                }
+            }
+
+            for (let i = 0; i < indices.length; i++) {
+                liveLayerIds.move(indices[i], i)
+            }
+        },
+        [selection]
+    )
+
+    // 修改选中与图层颜色
     const setFill = useMutation(
         ({ storage }, fill: Color) => {
             const liveLayers = storage.get('layers')
@@ -55,6 +99,18 @@ export const SelectionsTools = memo(({ camera, setLastUsedColor }: SelectionsToo
         >
             {/* Aadd Tools */}
             <ColorPicker onChange={setFill} />
+            <div className='flex flex-col gap-y-0.5'>
+                <ActionTooltip label='Bring to front'>
+                    <Button variant='board' size='icon' onClick={moveToFront}>
+                        <BringToFront />
+                    </Button>
+                </ActionTooltip>
+                <ActionTooltip label='Send to back' side='bottom'>
+                    <Button variant='board' size='icon' onClick={moveToBack}>
+                        <SendToBack />
+                    </Button>
+                </ActionTooltip>
+            </div>
             <div className='flex items-center pl-2 ml-2 border-l border-neutral-200'>
                 <ActionTooltip label='delete layer'>
                     <Button variant='board' size='icon' onClick={deleteLayer}>
