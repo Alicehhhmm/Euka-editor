@@ -6,9 +6,11 @@ import { useStorage } from '@/liveblocks.config'
 
 import { LayerType } from '../types/canvas'
 import { Rectangle } from '../graph/rectangle'
-import { Ellipse } from '../graph/ellipse'
 import { Text } from '../graph/text'
 import { Note } from '../graph/note'
+import { Ellipse } from '../graph/ellipse'
+import { Path } from '../graph/path'
+import { colorToCss } from '../_utils'
 
 interface LayerPreviewProps {
     id: string
@@ -26,13 +28,25 @@ export const LayerPreview = memo(({ id, onLayerPointerDown, selectionColor }: La
 
     switch (layer.type) {
         case LayerType.Text:
-            return <Text id={id} layer={layer} onPointerDown={onLayerPointerDown} selectionColor={selectionColor} />
+            return <Text key={id} id={id} layer={layer} onPointerDown={onLayerPointerDown} selectionColor={selectionColor} />
         case LayerType.Note:
-            return <Note id={id} layer={layer} onPointerDown={onLayerPointerDown} selectionColor={selectionColor} />
+            return <Note key={id} id={id} layer={layer} onPointerDown={onLayerPointerDown} selectionColor={selectionColor} />
         case LayerType.Rectangle:
-            return <Rectangle id={id} layer={layer} onPointerDown={onLayerPointerDown} selectionColor={selectionColor} />
+            return <Rectangle key={id} id={id} layer={layer} onPointerDown={onLayerPointerDown} selectionColor={selectionColor} />
         case LayerType.Ellipse:
-            return <Ellipse id={id} layer={layer} onPointerDown={onLayerPointerDown} selectionColor={selectionColor} />
+            return <Ellipse key={id} id={id} layer={layer} onPointerDown={onLayerPointerDown} selectionColor={selectionColor} />
+        case LayerType.Path:
+            return (
+                <Path
+                    key={id}
+                    x={layer.x}
+                    y={layer.y}
+                    points={layer.points}
+                    storke={selectionColor}
+                    fill={layer.fill ? colorToCss(layer.fill) : '#000'}
+                    onPointerDown={e => onLayerPointerDown(e, id)}
+                />
+            )
 
         default:
             console.warn('Unknow layer type')

@@ -1,4 +1,4 @@
-import { Camera, Color, Layer, Point, Side, XYWH } from "@/euka-core/types/canvas";
+import { Camera, Color, Layer, LayerType, PathLayer, Point, Side, XYWH } from "@/euka-core/types/canvas";
 
 export function pointerEventToCanvasPoint(
     e: React.PointerEvent,
@@ -120,4 +120,86 @@ export function findIntersectingLayersWithRectangle(
 export function getContrastingTextColor(color: Color) {
     const luminance = (0.299 * color.r + 0.587 * color.g + 0.114 * color.b) / 255
     return luminance > 182 ? 'black' : 'white'
+}
+
+/**
+ * 画笔绘制路径
+ * @param points 
+ * @param color 
+ * @returns {XYWH,fill,points[[x,y,pressure],[x,y,pressure],..]}
+ */
+export function penPointsToPathLayer(points: number[][], color: Color): PathLayer {
+    if (points.length < 2) {
+        throw new Error('Path must have at least 2 points')
+    }
+
+    // 初始化边界值
+    let top = Number.POSITIVE_INFINITY
+    let bottom = Number.NEGATIVE_INFINITY
+    let left = Number.POSITIVE_INFINITY
+    let right = Number.NEGATIVE_INFINITY
+
+    // 遍历所有点，计算边界框
+    for (const point of points) {
+        const [x, y] = point
+
+        if (top > y) {
+            top = y
+        }
+
+        if (bottom < y) {
+            bottom = y
+        }
+
+        if (left > x) {
+            left = x
+        }
+
+        if (right < x) {
+            right = x
+        }
+
+    }
+    return {
+        type: LayerType.Path,
+        x: left,
+        y: top,
+        width: right - left,
+        height: bottom - top,
+        fill: color,
+        points: points
+            .map(([x, y, pressure]) =>
+                [x - left, y - top, pressure]
+            )
+    }
+}
+
+/**
+ * 将画笔触点（stroke）绘制路径转换为SVG路径
+ * @param stroke 
+ * @returns SVGPath: "M ..... Z"
+ */
+export function getSvgPathFromStroke(stroke: number[][]) {
+    if (!stroke.length) return ''
+
+    const d = stroke.reduce(
+        (acc, [x0, y0], i, arr) => {
+            // 获取当前点的下一个点
+            // 如果是最后一个点，则取第一个点，形成闭合路径
+            const [x1, y1] = arr[(i + 1) % arr.length];
+
+            // 计算贝塞尔曲线的控制点（中点）
+            const cx = (x0 + x1) / 2; // 控制点的 x 坐标
+            const cy = (y0 + y1) / 2; // 控制点的 y 坐标
+
+            // 将当前点和控制点的坐标推入累加器数组
+            acc.push(x0, y0, cx, cy);
+            return acc
+        },
+        ["M", ...stroke[0], 'Q']
+    )
+
+    // 添加 Z 指令，表示路径结束
+    d.push('Z')
+    return d.join(' ')
 }

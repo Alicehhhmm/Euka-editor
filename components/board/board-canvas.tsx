@@ -10,7 +10,7 @@ import { CanvasState, CanvasMode, Camera, Color, LayerType, Point, Side, XYWH } 
 import { EukaDrawBoard } from '@/euka-core'
 import { MAX_LAYERS } from '@/euka-core/settings'
 import { SelectionsTools } from '@/euka-core/selections-tools'
-import { findIntersectingLayersWithRectangle, pointerEventToCanvasPoint, resizeBounds } from '@/euka-core/_utils'
+import { findIntersectingLayersWithRectangle, penPointsToPathLayer, pointerEventToCanvasPoint, resizeBounds } from '@/euka-core/_utils'
 
 import { InfoPanel } from './info-panel'
 import { ToolbarPanel } from './toolbar-panel'
@@ -91,6 +91,58 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
         },
         [history]
     )
+
+    // 画板-监听画笔继续绘制
+    const continueDrawing = useMutation(
+        ({ setMyPresence, self }, point: Point, e: React.PointerEvent) => {
+            const { pencilDraft } = self.presence
+
+            if (canvasState.mode !== CanvasMode.Pencil || e.buttons != 1 || pencilDraft === null) {
+                return
+            }
+
+            setMyPresence({
+                cursor: point,
+                pencilDraft:
+                    pencilDraft.length === 1 && pencilDraft[0][0] === point.x && pencilDraft[0][1] === point.y
+                        ? pencilDraft
+                        : [...pencilDraft, [point.x, point.y, e.pressure]],
+            })
+        },
+        [canvasState.mode]
+    )
+
+    // 画板-监听画笔路径
+    const insertPath = useMutation(
+        ({ setMyPresence, storage, self }) => {
+            const liveLayers = storage.get('layers')
+            const { pencilDraft } = self.presence
+
+            if (pencilDraft === null || pencilDraft.length < 2 || liveLayers.size >= MAX_LAYERS) {
+                setMyPresence({ pencilDraft: null })
+                return
+            }
+
+            const layerId = nanoid()
+            const layer = new LiveObject(penPointsToPathLayer(pencilDraft, lastUsedColor))
+            liveLayers.set(layerId, layer)
+
+            const liveLayerIds = storage.get('layerIds')
+            liveLayerIds.push(layerId)
+
+            setMyPresence({ pencilDraft: null })
+            setCanvasState({ mode: CanvasMode.Pencil })
+        },
+        [lastUsedColor]
+    )
+
+    // 画板-监听画笔初始位置
+    const startDrawing = useMutation(({ setMyPresence }, point: Point, pressure: number) => {
+        setMyPresence({
+            pencilDraft: [[point.x, point.y, pressure]],
+            penColor: lastUsedColor,
+        })
+    }, [])
 
     // 画板-监听选择图层边框调整大小
     const resizeSelectedLayer = useMutation(
@@ -207,10 +259,10 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
 
             const current = pointerEventToCanvasPoint(e, camera)
             if (canvasState.mode === CanvasMode.Pressing) {
-                //
+                // 移动网格选择（框选）多个图层
                 starMultiSelection(current, canvasState.origin)
             } else if (canvasState.mode === CanvasMode.SelectionNet) {
-                //
+                // 移动更新选择图层网格
                 updateSelevtionNet(current, canvasState.origin)
             } else if (canvasState.mode === CanvasMode.Translating) {
                 // 选择元素移动
@@ -218,13 +270,16 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
             } else if (canvasState.mode === CanvasMode.Resizing) {
                 // 移动边框调整大小
                 resizeSelectedLayer(current)
+            } else if (canvasState.mode === CanvasMode.Pencil) {
+                // 移动画笔绘制
+                continueDrawing(current, e)
             }
 
             setMyPresence({
                 cursor: current,
             })
         },
-        [camera, canvasState, resizeSelectedLayer]
+        [camera, canvasState, starMultiSelection, updateSelevtionNet, translateSelectedLayers, resizeSelectedLayer, continueDrawing]
     )
 
     // 画板-监听光标离开画布
@@ -243,14 +298,17 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
                 return
             }
 
-            // TODO: Add case for drawing
+            if (canvasState.mode === CanvasMode.Pencil) {
+                startDrawing(point, e.pressure)
+                return
+            }
 
             setCanvasState({
                 mode: CanvasMode.Pressing,
                 origin: point,
             })
         },
-        [camera, canvasState.mode, setCanvasState]
+        [camera, canvasState.mode, setCanvasState, startDrawing]
     )
 
     // 画板-监听光标抬起
@@ -266,6 +324,8 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
                 })
             } else if (canvasState.mode === CanvasMode.Inserting) {
                 insertLayer(canvasState.layerType, point)
+            } else if (canvasState.mode === CanvasMode.Pencil) {
+                insertPath()
             } else {
                 setCanvasState({
                     mode: CanvasMode.None,
@@ -275,7 +335,7 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
             // 恢复操作历史记录
             history.resume()
         },
-        [camera, canvasState, history, insertLayer, unselectLayers]
+        [camera, canvasState, setCanvasState, history, insertLayer, insertPath, unselectLayers]
     )
 
     // 画板-监听点击选择图层
