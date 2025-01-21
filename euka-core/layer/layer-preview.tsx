@@ -6,6 +6,7 @@ import { useStorage } from '@/liveblocks.config'
 
 import { LayerType } from '../types/canvas'
 import { Rectangle } from '../graph/rectangle'
+import { Ellipse } from '../graph/ellipse'
 
 interface LayerPreviewProps {
     id: string
@@ -24,6 +25,8 @@ export const LayerPreview = memo(({ id, onLayerPointerDown, selectionColor }: La
     switch (layer.type) {
         case LayerType.Rectangle:
             return <Rectangle id={id} layer={layer} onPointerDown={onLayerPointerDown} selectionColor={selectionColor} />
+        case LayerType.Ellipse:
+            return <Ellipse id={id} layer={layer} onPointerDown={onLayerPointerDown} selectionColor={selectionColor} />
 
         default:
             console.warn('Unknow layer type')
