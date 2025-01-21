@@ -22,3 +22,32 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
 CLERK_SECRET_KEY=
 CLERK_JWT_ISSUER_DOMAIN=
 ```
+
+# Features
+
+## 1.Shortcuts:
+
+-   User presses Ctrl+Z to undo the last action.
+-   User presses Ctrl+Shift+Z to redo the last action.
+
+## 2.Pencil Tool:
+
+-   User selects the pencil tool and adjusts stroke width using the sidebar.
+-   User draws with varying pressure sensitivity on a tablet.
+
+## 3.Zoom:
+
+-   User zooms in using Ctrl++ to edit fine details.
+-   User uses the scroll wheel to zoom in and out for quick adjustments.
+
+## 4.Sidebar:
+
+-   User selects an element and adjusts its color and opacity via the sidebar.
+-   User sees real-time changes as they adjust properties.
+
+## 5.Thumbnails:
+
+-   User clicks on a thumbnail to view a specific state of the canvas.
+-   User uses thumbnails to navigate through layers quickly.
+
+## 6.Canvas with
