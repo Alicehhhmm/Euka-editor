@@ -9,7 +9,7 @@ const convexURl = process.env.NEXT_PUBLIC_CONVEX_URL!
 const convex = new ConvexClient(convexURl)
 
 const liveblocks = new Liveblocks({
-    secret: "sk_dev_rHvW9ovCI0dc6NBVNrwxa-ipTacqVYOoSM2-nAQnJ_NrL2810LB45snm4OF3FvkK",
+    secret: process.env.LIVEBLOCKS_SECRET_KEY!,
 });
 
 
