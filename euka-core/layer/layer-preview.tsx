@@ -8,6 +8,7 @@ import { LayerType } from '../types/canvas'
 import { Rectangle } from '../graph/rectangle'
 import { Ellipse } from '../graph/ellipse'
 import { Text } from '../graph/text'
+import { Note } from '../graph/note'
 
 interface LayerPreviewProps {
     id: string
@@ -26,6 +27,8 @@ export const LayerPreview = memo(({ id, onLayerPointerDown, selectionColor }: La
     switch (layer.type) {
         case LayerType.Text:
             return <Text id={id} layer={layer} onPointerDown={onLayerPointerDown} selectionColor={selectionColor} />
+        case LayerType.Note:
+            return <Note id={id} layer={layer} onPointerDown={onLayerPointerDown} selectionColor={selectionColor} />
         case LayerType.Rectangle:
             return <Rectangle id={id} layer={layer} onPointerDown={onLayerPointerDown} selectionColor={selectionColor} />
         case LayerType.Ellipse:

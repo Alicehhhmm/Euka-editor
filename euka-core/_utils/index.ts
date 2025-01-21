@@ -111,3 +111,13 @@ export function findIntersectingLayersWithRectangle(
 
     return ids
 }
+
+/**
+ * 文本对比色: 根据luminance阈值判断文字颜色
+ * @param color 
+ * @returns  black | white
+ */
+export function getContrastingTextColor(color: Color) {
+    const luminance = (0.299 * color.r + 0.587 * color.g + 0.114 * color.b) / 255
+    return luminance > 182 ? 'black' : 'white'
+}
