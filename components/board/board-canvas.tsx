@@ -4,7 +4,7 @@ import { useCallback, useState, useMemo } from 'react'
 import { nanoid } from 'nanoid'
 import { LiveObject } from '@liveblocks/client'
 
-import { useHistory, useCanUndo, useCanRedo, useMutation, useStorage, useOthersMapped } from '@/liveblocks.config'
+import { useHistory, useCanUndo, useCanRedo, useMutation, useStorage, useOthersMapped, useSelf } from '@/liveblocks.config'
 
 import { CanvasState, CanvasMode, Camera, Color, LayerType, Point, Side, XYWH } from '@/euka-core/types/canvas'
 import { EukaDrawBoard } from '@/euka-core'
@@ -23,6 +23,7 @@ interface BoardCanvasProps {
 
 export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
     const layerIds = useStorage(root => root.layerIds)
+    const pencilDraft = useSelf(me => me.presence.pencilDraft)
 
     // 画板状态
     const [canvasState, setCanvasState] = useState<CanvasState>({
@@ -403,6 +404,8 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
             <EukaDrawBoard
                 layerIds={layerIds}
                 camera={camera}
+                lastUsedColor={lastUsedColor}
+                pencilDraft={pencilDraft}
                 canvasState={canvasState}
                 selectionColor={layerIdsColorsSelection}
                 onWheel={onWheel}

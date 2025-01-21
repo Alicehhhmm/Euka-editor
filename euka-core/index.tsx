@@ -1,13 +1,17 @@
 'use client'
 
-import { Camera, CanvasState, CanvasMode, Side, XYWH } from './types/canvas'
+import { Camera, CanvasState, CanvasMode, Side, XYWH, Color } from './types/canvas'
 import { CursorsPresence } from './cursors/cursors-presence'
 import { LayerPreview } from './layer/layer-preview'
 import { SelectionBox } from './selection-box'
+import { Path } from './graph/path'
+import { colorToCss } from './_utils'
 
 interface DrawBoardProps {
     layerIds: readonly string[]
     camera: Camera
+    lastUsedColor: Color
+    pencilDraft: [x: number, y: number, pressure: number][] | null
     canvasState: CanvasState
     setCanvasState?: (newState: CanvasState) => void
     selectionColor: Record<string, string>
@@ -23,6 +27,8 @@ interface DrawBoardProps {
 export const EukaDrawBoard = ({
     layerIds,
     camera,
+    lastUsedColor,
+    pencilDraft,
     canvasState,
     setCanvasState,
     selectionColor,
@@ -59,6 +65,7 @@ export const EukaDrawBoard = ({
                         />
                     ))}
                     <SelectionBox onResizeHandlePionterDown={onResizeHandlePionterDown} />
+                    {/* TODO: 抽离为独立框选网格组件 */}
                     {canvasState.mode === CanvasMode.SelectionNet && canvasState.current != null && (
                         <rect
                             x={Math.min(canvasState.origin.x, canvasState.current.x)}
@@ -72,6 +79,12 @@ export const EukaDrawBoard = ({
                                 strokeWidth: 1,
                             }}
                         />
+                    )}
+                    {/* TODO: 抽离为独立画笔组件 */}
+                    {pencilDraft !== null && pencilDraft.length > 0 && (
+                        <>
+                            <Path x={0} y={0} fill={colorToCss(lastUsedColor)} points={pencilDraft} />
+                        </>
                     )}
                     <CursorsPresence />
                 </g>
