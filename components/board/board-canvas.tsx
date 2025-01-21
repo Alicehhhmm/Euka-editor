@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState, useMemo } from 'react'
+import { useCallback, useState, useMemo, useEffect } from 'react'
 import { nanoid } from 'nanoid'
 import { LiveObject } from '@liveblocks/client'
 
@@ -16,6 +16,9 @@ import { InfoPanel } from './info-panel'
 import { ToolbarPanel } from './toolbar-panel'
 import { ParticipantsPanel } from './participants-panel'
 import { GenColors } from '@/lib/utils'
+
+import { useDisableScrollBounce } from '@/hooks/use-disable-scroll-bounce'
+import { useDeleteLayers } from '@/hooks/use-delete-layers'
 
 interface BoardCanvasProps {
     boardId: string
@@ -33,6 +36,7 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
     const [lastUsedColor, setLastUsedColor] = useState<Color>({ r: 0, g: 0, b: 0 })
 
     // 画板-操作记录
+    useDisableScrollBounce()
     const history = useHistory()
     const canUndo = useCanUndo()
     const canRedo = useCanRedo()
@@ -387,6 +391,31 @@ export const BoardCanvas = ({ boardId }: BoardCanvasProps) => {
 
         return layerIdsToColorSelectionObj
     }, [selections])
+
+    const deleteLayers = useDeleteLayers()
+
+    useEffect(() => {
+        function onKeyDown(e: KeyboardEvent) {
+            switch (e.key.toLowerCase()) {
+                case 'z': {
+                    if (e.ctrlKey || e.metaKey) {
+                        if (e.shiftKey) {
+                            history.redo()
+                        } else {
+                            history.undo()
+                        }
+                        e.preventDefault()
+                    }
+                    break
+                }
+            }
+        }
+
+        window.addEventListener('keydown', onKeyDown)
+        return () => {
+            window.removeEventListener('keydown', onKeyDown)
+        }
+    }, [history, deleteLayers])
 
     return (
         <main className='h-full w-full relative bg-neutral-100 touch-none'>
